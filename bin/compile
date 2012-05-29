@@ -204,5 +204,8 @@ function build() {
   )
 }
 
+[ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
+[ ! -d $CACHE_DIR ] && mkdir $CACHE_DIR
+
 fetch_meteor
 build
