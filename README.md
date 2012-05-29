@@ -1,73 +1,22 @@
-Heroku buildpack: Node.js
-=========================
+# Heroku buildpack: Meteor, npm compatible
 
-This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Node.js apps.
-It uses [NPM](http://npmjs.org/) and [SCons](http://www.scons.org/).
+This is a fork of the [Node.js buildpack](https://github.com/heroku/heroku-buildpack-nodejs), and I've left it nearly intact apart from manually combining the bin/* files from [Jordan Sissel's meteor buildpack](https://github.com/jordansissel/heroku-buildpack-meteor).
 
-Usage
------
+This combination buildpack allows us to setup our Meteor project as an npm package (via package.json, as recommended by Heroku for Node.js installations on the cedar stack).
 
-Example usage:
+## Usage
 
-    $ ls
-    Procfile  package.json  web.js
+```
+heroku create --stack cedar --buildpack https://github.com/matb33/heroku-buildpack-nodejs.git
+```
 
-    $ heroku create --stack cedar --buildpack http://github.com/heroku/heroku-buildpack-nodejs.git
+If you get a `! Resource not found` message like I did, then split up the create into two steps (though make sure to `heroku apps:destroy` your previous attempt):
 
-    $ git push heroku master
-    ...
-    -----> Heroku receiving push
-    -----> Fetching custom buildpack
-    -----> Node.js app detected
-    -----> Vendoring node 0.4.7
-    -----> Installing dependencies with npm 1.0.8
-           express@2.1.0 ./node_modules/express
-           ├── mime@1.2.2
-           ├── qs@0.3.1
-           └── connect@1.6.2
-           Dependencies installed
+```
+heroku create --stack cedar
+heroku config:add BUILDPACK_URL=https://github.com/matb33/heroku-buildpack-nodejs.git
+```
 
-The buildpack will detect your app as Node.js if it has the file `package.json` in the root.  It will use NPM to install your dependencies, and vendors a version of the Node.js runtime into your slug.  The `node_modules` directory will be cached between builds to allow for faster NPM install time.
+## Example
 
-Node.js and npm versions
-------------------------
-
-You can specify the versions of Node.js and npm your application requires using `package.json`
-
-    {
-      "name": "myapp",
-      "version": "0.0.1",
-      "engines": {
-        "node": ">=0.4.7 <0.7.0",
-        "npm": ">=1.0.0"
-      }
-    }
-
-To list the available versions of Node.js and npm, see these manifests:
-
-http://heroku-buildpack-nodejs.s3.amazonaws.com/manifest.nodejs
-http://heroku-buildpack-nodejs.s3.amazonaws.com/manifest.npm
-
-Hacking
--------
-
-To use this buildpack, fork it on Github.  Push up changes to your fork, then create a test app with `--buildpack <your-github-url>` and push to it.
-
-To change the vendored binaries for Node.js, NPM, and SCons, use the helper scripts in the `support/` subdirectory.  You'll need an S3-enabled AWS account and a bucket to store your binaries in.
-
-For example, you can change the default version of Node.js to v0.6.7.
-
-First you'll need to build a Heroku-compatible version of Node.js:
-
-    $ export AWS_ID=xxx AWS_SECRET=yyy S3_BUCKET=zzz
-    $ s3 create $S3_BUCKET
-    $ support/package_nodejs 0.6.7
-
-Open `bin/compile` in your editor, and change the following lines:
-
-    DEFAULT_NODE_VERSION="0.6.7"
-    S3_BUCKET=zzz
-
-Commit and push the changes to your buildpack to your Github fork, then push your sample app to Heroku to test.  You should see:
-
-    -----> Vendoring node 0.6.7
+See [this project](https://github.com/matb33/heroku-meteor-npm) for an example that leverages this frankenstein buildpack.
