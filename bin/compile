@@ -176,20 +176,23 @@ echo "-----> Installing meteorite with npm"
 run_npm "install meteorite -g"
 echo "Meteorite installed" | indent
 
+$METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
 ############################################
 # install meteor + packages through mrt
 # bundle, and install into app/
 ############################################
 cd $BUILD_DIR
 echo "Building meteor bundle"
-mrt bundle $CACHE_DIR/bundle.tar.gz
-mkdir -p $BUILD_DIR/app
-tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $BUILD_DIR/app
+mrt bundle $CACHE_DIR/bundle.tar.gz | indent
+mkdir -p $METEOR_BUILD_DIR/app
+tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
 rm $CACHE_DIR/bundle.tar.gz
 ############################################
 
 # vendor node into the slug
-PATH="$BUILD_DIR/bin:$PATH"
+PATH="$METEOR_BUILD_DIR/bin:$PATH"
 echo "-----> Vendoring node into slug"
-mkdir -p "$BUILD_DIR/bin"
-cp "$VENDORED_NODE/bin/node" "$BUILD_DIR/bin/node"
+mkdir -p "$METEOR_BUILD_DIR/bin"
+cp "$VENDORED_NODE/bin/node" "$METEOR_BUILD_DIR/bin/node"
+
+find $METEOR_BUILD_DIR

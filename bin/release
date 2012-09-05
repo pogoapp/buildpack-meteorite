@@ -6,7 +6,7 @@ cat <<EOF
 addons:
   - mongohq:free
 config_vars:
-  PATH: bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin
+  PATH: .meteor/heroku_build/bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin
 default_process_types:
-  web: MONGO_URL=\$MONGOHQ_URL node app/main.js
+  web: MONGO_URL=\$MONGOHQ_URL node .meteor/heroku_build/app/main.js
 EOF
