@@ -177,12 +177,15 @@ echo "-----> Installing meteorite with npm"
 run_npm "install meteorite"
 echo "Meteorite installed" | indent
 
-METEOR_HOME="$BUILD_DIR/.meteor/local"
-PATH="$METEOR_HOME/usr/bin:$METEOR_HOME/usr/lib/meteor/bin:$PATH"
+############################################
+# install meteor + packages through mrt
+############################################
 
 function build() {
   (
     cd $BUILD_DIR
+    ls
+    find .
     echo "Building meteor bundle"
     mrt bundle $CACHE_DIR/bundle.tar.gz
     mkdir -p $BUILD_DIR/.meteor/local/build
