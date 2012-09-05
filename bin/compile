@@ -191,4 +191,5 @@ rm $CACHE_DIR/bundle.tar.gz
 ############################################
 
 #Try it
+find .meteor/heroku_build
 .meteor/heroku_build/bin/node .meteor/heroku_build/app/main.js
