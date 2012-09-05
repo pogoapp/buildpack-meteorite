@@ -186,6 +186,9 @@ function build() {
     cd $BUILD_DIR
     ls
     find .
+    echo $PATH
+    echo $VENDORED_NODE/bin
+    find $VENDORED_NODE/bin
     echo "Building meteor bundle"
     mrt bundle $CACHE_DIR/bundle.tar.gz
     mkdir -p $BUILD_DIR/.meteor/local/build
