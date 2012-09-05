@@ -144,6 +144,7 @@ SCONS_PACKAGE="http://${S3_BUCKET}.s3.amazonaws.com/scons-${SCONS_VERSION}.tgz"
 VENDORED_NODE="$(mktmpdir node)"
 VENDORED_NPM="$(mktmpdir npm)"
 VENDORED_SCONS="$(mktmpdir scons)"
+VENDORED_MODULES="$(mktmpdir modules)"
 
 # download and unpack packages
 echo "-----> Fetching Node.js binaries"
@@ -151,15 +152,10 @@ package_download "nodejs" "${NODE_VERSION}" "${VENDORED_NODE}"
 package_download "npm" "${NPM_VERSION}" "${VENDORED_NPM}"
 package_download "scons" "${SCONS_VERSION}" "${VENDORED_SCONS}"
 
-# vendor node into the slug
-PATH="$BUILD_DIR/bin:$PATH"
-echo "-----> Vendoring node into slug"
-mkdir -p "$BUILD_DIR/bin"
-cp "$VENDORED_NODE/bin/node" "$BUILD_DIR/bin/node"
-
 # setting up paths for building
 PATH="$VENDORED_SCONS:$VENDORED_NODE/bin:$PATH"
 INCLUDE_PATH="$VENDORED_NODE/include"
+export npm_config_prefix="$VENDORED_MODULES"
 export CPATH="$INCLUDE_PATH"
 export CPPPATH="$INCLUDE_PATH"
 
@@ -174,9 +170,10 @@ export CPPPATH="$INCLUDE_PATH"
 # install meteorite
 ############################################
 echo "-----> Installing meteorite with npm"
-run_npm "install meteorite"
+run_npm "install meteorite -g"
 PATH="$BUILD_DIR/node_modules/.bin:$PATH"
 echo "Meteorite installed" | indent
+find "$VENDORED_MODULES"
 
 ############################################
 # install meteor + packages through mrt
@@ -185,12 +182,6 @@ echo "Meteorite installed" | indent
 function build() {
   (
     cd $BUILD_DIR
-    ls
-    find .
-    echo $PATH
-    echo $VENDORED_NODE/bin
-    find $VENDORED_NODE
-    find $VENDORED_NPM
     echo "Building meteor bundle"
     mrt bundle $CACHE_DIR/bundle.tar.gz
     mkdir -p $BUILD_DIR/.meteor/local/build
