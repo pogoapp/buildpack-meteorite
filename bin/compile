@@ -176,7 +176,7 @@ echo "-----> Installing meteorite with npm"
 run_npm "install meteorite -g"
 echo "Meteorite installed" | indent
 
-$METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
+METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
 mkdir -p $METEOR_BUILD_DIR
 ############################################
 # install meteor + packages through mrt
