@@ -175,6 +175,7 @@ export CPPPATH="$INCLUDE_PATH"
 ############################################
 echo "-----> Installing meteorite with npm"
 run_npm "install meteorite"
+PATH="$BUILD_DIR/node_modules/.bin:$PATH"
 echo "Meteorite installed" | indent
 
 ############################################
