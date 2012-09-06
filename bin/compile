@@ -195,7 +195,3 @@ PATH="$METEOR_BUILD_DIR/bin:$PATH"
 echo "-----> Vendoring node into slug"
 mkdir -p "$METEOR_BUILD_DIR/bin"
 cp "$VENDORED_NODE/bin/node" "$METEOR_BUILD_DIR/bin/node"
-
-#Try it
-find .meteor/heroku_build
-.meteor/heroku_build/bin/node .meteor/heroku_build/app/main.js
