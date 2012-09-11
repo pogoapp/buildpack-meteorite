@@ -48,7 +48,7 @@ function run_npm() {
   cd $BUILD_DIR
   echo $BUILD_DIR
   echo $PATH
-  HOME="$BUILD_DIR" $VENDORED_NODE/bin/npm $command 2>&1 | indent
+  HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
     echo " !     Failed to $command dependencies with npm"
