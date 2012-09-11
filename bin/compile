@@ -46,7 +46,7 @@ function run_npm() {
   command="$1"
 
   cd $BUILD_DIR
-  HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NPM/cli.js $command 2>&1 | indent
+  HOME="$BUILD_DIR" $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
     echo " !     Failed to $command dependencies with npm"
@@ -143,8 +143,6 @@ VENDORED_MODULES="$(mktmpdir modules)"
 echo "-----> Fetching Node.js binaries"
 package_download "nodejs" "${NODE_VERSION}" "${VENDORED_NODE}"
 package_download "scons" "${SCONS_VERSION}" "${VENDORED_SCONS}"
-
-find ${VENDORED_NODE}
 
 # setting up paths for building
 PATH="$VENDORED_SCONS:$VENDORED_NODE/bin:$VENDORED_MODULES/bin:$PATH"
