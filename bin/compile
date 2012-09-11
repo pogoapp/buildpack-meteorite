@@ -144,7 +144,7 @@ echo "-----> Fetching Node.js binaries"
 package_download "nodejs" "${NODE_VERSION}" "${VENDORED_NODE}"
 package_download "scons" "${SCONS_VERSION}" "${VENDORED_SCONS}"
 
-ls -la ${VENDORED_NODE}
+find ${VENDORED_NODE}
 
 # setting up paths for building
 PATH="$VENDORED_SCONS:$VENDORED_NODE/bin:$VENDORED_MODULES/bin:$PATH"
