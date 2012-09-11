@@ -46,6 +46,8 @@ function run_npm() {
   command="$1"
 
   cd $BUILD_DIR
+  echo $BUILD_DIR
+  echo $PATH
   HOME="$BUILD_DIR" $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
