@@ -46,8 +46,6 @@ function run_npm() {
   command="$1"
 
   cd $BUILD_DIR
-  echo $BUILD_DIR
-  echo $PATH
   HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
@@ -168,14 +166,14 @@ run_npm "install meteorite -g"
 echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
-mkdir -p $METEOR_BUILD_DIR
+mkdir -p "$HOME"
 ############################################
 # install meteor + packages through mrt
 # bundle, and install into app/
 ############################################
 cd $BUILD_DIR
 echo "Building meteor bundle"
-mrt bundle $CACHE_DIR/bundle.tar.gz | indent
+HOME="$BUILD_DIR" mrt bundle $CACHE_DIR/bundle.tar.gz | indent
 mkdir -p $METEOR_BUILD_DIR/app
 tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
 rm $CACHE_DIR/bundle.tar.gz
