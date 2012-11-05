@@ -12,4 +12,4 @@ heroku create --stack cedar --buildpack https://github.com/oortcloud/heroku-buil
 
 Then `git push` to heroku as usual. 
 
-_NOTE_: you need to have a verified account so the buildpack can add a `mongohq:free` addon.
+_NOTE_: you need to have a verified account so the buildpack can add a `mongohq:sandbox` addon.
