@@ -191,7 +191,7 @@ cat > $BUILD_DIR/.profile.d/mongo.sh <<EOF
   #!/bin/sh
   
   # MONGO_URL=\${MONGO_URL:\$MONGOHQ_URL};
-  MONGO_URL=\$MONGOHQ_URL;
+  export MONGO_URL=\$MONGOHQ_URL;
 EOF
 
 # vendor node into the slug
