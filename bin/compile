@@ -182,6 +182,18 @@ tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
 rm $CACHE_DIR/bundle.tar.gz
 ############################################
 
+############################################
+# Prepare ENV vars
+############################################
+echo "Setting up MONGO_URL in .profile.d"
+mkdir -p $BUILD_DIR/.profile.d
+cat > $BUILD_DIR/.profile.d <<<EOF
+  #!/bin/sh
+  
+  # MONGO_URL=${MONGO_URL:$MONGOHQ_URL};
+  MONGO_URL=$MONGOHQ_URL;
+EOF
+
 # vendor node into the slug
 PATH="$METEOR_BUILD_DIR/bin:$PATH"
 echo "-----> Vendoring node into slug"
