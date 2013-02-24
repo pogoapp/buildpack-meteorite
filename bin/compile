@@ -187,7 +187,7 @@ rm $CACHE_DIR/bundle.tar.gz
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
 mkdir -p $BUILD_DIR/.profile.d
-cat > $BUILD_DIR/.profile.d <<<EOF
+cat > $BUILD_DIR/.profile.d/mongo.sh <<<EOF
   #!/bin/sh
   
   # MONGO_URL=${MONGO_URL:$MONGOHQ_URL};
