@@ -51,6 +51,7 @@ function run_npm() {
     home_dir="$2";
   fi
 
+  echo "$home_dir" "$command"
   cd "$home_dir"
   HOME="$home_dir" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
@@ -170,8 +171,8 @@ export CPPPATH="$INCLUDE_PATH"
 echo "-----> Installing meteorite with npm"
 
 # Use another folder to avoid duplicate package inclusion
-VENDORED_METEORITE="$(mktmpdir meteor)"
-run_npm "install meteorite -g" $VENDORED_METEORITE
+VENDORED_METEORITE="$(mktmpdir meteorite)"
+run_npm "install meteorite -g" "$VENDORED_METEORITE"
 echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
@@ -183,7 +184,7 @@ mkdir -p "$HOME"
 cd $BUILD_DIR
 echo "Installing meteor" | indent
 VENDORED_METEOR="$(mktmpdir meteor)"
-curl https://install.meteor.com | HOME=$VENDORED_METEOR /bin/sh | indent
+curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh | indent
 echo "Meteor installed" | indent
 
 echo "Installing packages" | indent
@@ -193,19 +194,19 @@ echo "Building meteor bundle" | indent
 pwd
 echo $BUILD_DIR
 ls -la $BUILD_DIR/.meteor
-HOME=$VENDORED_METEOR $VENDORED_METEOR/.meteor/meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle "$CACHE_DIR"/bundle.tar.gz 2>&1 | indent
 echo "Bundled" | indent
-mkdir -p $METEOR_BUILD_DIR/app
-tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
-rm $CACHE_DIR/bundle.tar.gz
+mkdir -p "$METEOR_BUILD_DIR"/app
+tar -zxf "$CACHE_DIR"/bundle.tar.gz --strip-components 1 -C "$METEOR_BUILD_DIR"/app
+rm "$CACHE_DIR"/bundle.tar.gz
 ############################################
 
 ############################################
 # Prepare ENV vars
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
-mkdir -p $BUILD_DIR/.profile.d
-cat > $BUILD_DIR/.profile.d/mongo.sh <<EOF
+mkdir -p "$BUILD_DIR"/.profile.d
+cat > "$BUILD_DIR"/.profile.d/mongo.sh <<EOF
   #!/bin/sh
 
   export MONGO_URL=\${MONGO_URL:-\$MONGOHQ_URL};
