@@ -173,7 +173,7 @@ mkdir -p "$HOME"
 ############################################
 cd $BUILD_DIR
 echo "Installing meteor" | indent
-curl https://install.meteor.com | HOME="$BUILD_DIR" /bin/sh | indent
+curl https://install.meteor.com | HOME=/app/vendor/meteor /bin/sh | indent
 echo "Meteor installed" | indent
 
 echo "Installing packages" | indent
@@ -183,7 +183,7 @@ echo "Building meteor bundle" | indent
 pwd
 echo $BUILD_DIR
 ls -la $BUILD_DIR/.meteor
-HOME=$BUILD_DIR $BUILD_DIR/.meteor/meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
+HOME=/app/vendor/meteor /app/vendor/meteor/.meteor/meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
 echo "Bundled" | indent
 mkdir -p $METEOR_BUILD_DIR/app
 tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
