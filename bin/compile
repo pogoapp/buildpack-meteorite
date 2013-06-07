@@ -179,8 +179,8 @@ echo "Meteor installed" | indent
 echo "Installing packages" | indent
 HOME="$BUILD_DIR" mrt install | indent
 echo "Building meteor bundle" | indent
-echo $BUILD_DIR
-HOME="$BUILD_DIR" .meteor/tools/latest/launch-meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
+cd 
+$BUILD_DIR/.meteor/tools/latest/launch-meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
 echo "Bundled" | indent
 mkdir -p $METEOR_BUILD_DIR/app
 tar -zxf $CACHE_DIR/bundle.tar.gz --strip-components 1 -C $METEOR_BUILD_DIR/app
