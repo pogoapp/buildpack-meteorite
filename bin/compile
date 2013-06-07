@@ -182,7 +182,7 @@ echo "Building meteor bundle" | indent
 
 pwd
 echo $BUILD_DIR
-ls -la $BUILD_DIR
+ls -la $BUILD_DIR/.meteor
 HOME=$BUILD_DIR $BUILD_DIR/.meteor/meteor bundle $CACHE_DIR/bundle.tar.gz 2>&1 | indent
 echo "Bundled" | indent
 mkdir -p $METEOR_BUILD_DIR/app
