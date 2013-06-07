@@ -45,8 +45,14 @@ function indent() {
 function run_npm() {
   command="$1"
 
-  cd $BUILD_DIR
-  HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
+  if [ "$2" == ""]; then
+    home_dir="$BUILD_DIR";
+  else
+    home_dir="$2";
+  fi
+
+  cd "$home_dir"
+  HOME="$home_dir" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
     echo " !     Failed to $command dependencies with npm"
@@ -162,7 +168,10 @@ export CPPPATH="$INCLUDE_PATH"
 # install meteorite
 ############################################
 echo "-----> Installing meteorite with npm"
-run_npm "install meteorite -g"
+
+# Use another folder to avoid duplicate package inclusion
+VENDORED_METEORITE="$(mktmpdir meteor)"
+run_npm "install meteorite -g" $VENDORED_METEORITE
 echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
@@ -198,7 +207,7 @@ echo "Setting up MONGO_URL in .profile.d"
 mkdir -p $BUILD_DIR/.profile.d
 cat > $BUILD_DIR/.profile.d/mongo.sh <<EOF
   #!/bin/sh
-  
+
   export MONGO_URL=\${MONGO_URL:-\$MONGOHQ_URL};
 EOF
 
