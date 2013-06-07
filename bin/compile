@@ -173,7 +173,7 @@ mkdir -p "$HOME"
 ############################################
 cd $BUILD_DIR
 echo "Installing meteor" | indent
-VENDORED_METOER="$(mktmpdir meteor)"
+VENDORED_METEOR="$(mktmpdir meteor)"
 curl https://install.meteor.com | HOME=$VENDORED_METEOR /bin/sh | indent
 echo "Meteor installed" | indent
 
