@@ -51,7 +51,7 @@ function run_npm() {
     home_dir="$2";
   fi
 
-  ls $BUILD_DIR
+  ls -la $BUILD_DIR
 
   echo "$home_dir" "$command"
   cd "$home_dir"
@@ -62,7 +62,7 @@ function run_npm() {
     exit 1
   fi
 
-  ls $BUILD_DIR
+  ls -la $BUILD_DIR
 }
 
 function manifest_versions() {
