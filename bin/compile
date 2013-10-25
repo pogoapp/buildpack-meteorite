@@ -46,7 +46,7 @@ function run_npm() {
   command="$1"
 
   cd "$BUILD_DIR"
-  HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
+  HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NPM/cli.js $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
     echo " !     Failed to $command dependencies with npm"
@@ -63,14 +63,17 @@ function resolve_version() {
   requested_version="$2"
   default_version="$3"
 
+  args=""
+  for version in $available_versions; do args="${args} -v \"${version}\""; done
+
   if [ "$2" == "" ]; then
-    echo $3
+    args="${args} -r \"${default_version}\"";
   else
-    args=""
-    for version in $available_versions; do args="${args} -v \"${version}\""; done
-    for version in $requested_version; do args="${args} -r \"${version}\""; done
-    eval $bootstrap_node/bin/node $LP_DIR/vendor/node-semver/bin/semver ${args} | tail -n1
+    args="${args} -r \"${requested_version}\"";
   fi
+
+  evaluated_versions=$(eval $bootstrap_node/bin/node $LP_DIR/vendor/node-semver/bin/semver ${args} || echo "")
+  echo "$evaluated_versions" | tail -n 1
 }
 
 function package_engine_version() {
@@ -101,6 +104,14 @@ function package_download() {
   curl $package -s -o - | tar xzf - -C $location
 }
 
+function cat_npm_debug_log() {
+  if [ -f $BUILD_DIR/npm-debug.log ]; then
+    cat $BUILD_DIR/npm-debug.log
+  fi
+}
+
+trap cat_npm_debug_log EXIT
+
 bootstrap_node=$(mktmpdir bootstrap_node)
 package_download "nodejs" "0.4.7" $bootstrap_node
 
@@ -109,9 +120,14 @@ declare -A engine_versions
 declare -A engine_defaults
 declare -A engine_requests
 
-engine_defaults["node"]="0.8.19"
+engine_defaults["node"]="0.10.x"
+engine_defaults["npm"]="1.3.x"
+
 engine_versions["node"]=$(manifest_versions "nodejs")
 engine_requests["node"]=$(package_engine_version "node")
+
+engine_versions["npm"]=$(manifest_versions "npm")
+engine_requests["npm"]=$(package_engine_version "npm")
 
 echo "-----> Resolving engine versions"
 
@@ -126,30 +142,36 @@ fi
 NODE_VERSION=$(package_resolve_version "node")
 echo "Using Node.js version: ${NODE_VERSION}" | indent
 
+NPM_VERSION=$(package_resolve_version "npm")
+echo "Using npm version: ${NPM_VERSION}" | indent
+
 # cache directories
 CACHE_STORE_DIR="$CACHE_DIR/node_modules/$NODE_VERSION"
 CACHE_TARGET_DIR="$BUILD_DIR/node_modules"
 
 # s3 packages
 NODE_PACKAGE="http://${S3_BUCKET}.s3.amazonaws.com/nodejs-${NODE_VERSION}.tgz"
+NPM_PACKAGE="http://${S3_BUCKET}.s3.amazonaws.com/npm-${NPM_VERSION}.tgz"
 SCONS_PACKAGE="http://${S3_BUCKET}.s3.amazonaws.com/scons-${SCONS_VERSION}.tgz"
 
 # vendor directories
 VENDORED_NODE="$(mktmpdir node)"
+VENDORED_NPM="$(mktmpdir npm)"
 VENDORED_SCONS="$(mktmpdir scons)"
 VENDORED_MODULES="$(mktmpdir modules)"
 
 # download and unpack packages
 echo "-----> Fetching Node.js binaries"
 package_download "nodejs" "${NODE_VERSION}" "${VENDORED_NODE}"
+package_download "npm" "${NPM_VERSION}" "${VENDORED_NPM}"
 package_download "scons" "${SCONS_VERSION}" "${VENDORED_SCONS}"
 
 # setting up paths for building
 PATH="$VENDORED_SCONS:$VENDORED_NODE/bin:$VENDORED_MODULES/bin:$PATH"
 INCLUDE_PATH="$VENDORED_NODE/include"
 export npm_config_prefix="$VENDORED_MODULES"
-export CPATH="$INCLUDE_PATH"
-export CPPPATH="$INCLUDE_PATH"
+export CPATH="$INCLUDE_PATH:$CPATH"
+export CPPPATH="$INCLUDE_PATH:$CPPPATH"
 
 ## TODO -- figure out which node dependencies need to be installed
 # # install dependencies with npm
