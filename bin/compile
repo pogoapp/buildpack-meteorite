@@ -105,7 +105,6 @@ run_npm "install meteorite -g"
 echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
-mkdir -p "$HOME"
 ############################################
 # install meteor + packages through mrt
 # bundle, and install into app/
@@ -115,6 +114,9 @@ echo "Installing meteor" | indent
 
 # Using different folder to prevent install script form deleting packages file
 VENDORED_METEOR="$(mktmpdir meteor)"
+# workaround https://bugs.launchpad.net/ubuntu/+source/openssl/+bug/986147
+echo tlsv1 > $VENDORED_METEOR/.curlrc
+
 curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh | indent
 echo "Meteor installed" | indent
 
@@ -133,10 +135,11 @@ rm "$CACHE_DIR"/bundle.tar.gz
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
 mkdir -p "$BUILD_DIR"/.profile.d
-cat > "$BUILD_DIR"/.profile.d/mongo.sh <<EOF
-  #!/bin/sh
-
-  export MONGO_URL=\${MONGO_URL:-\$MONGOHQ_URL};
+cat > "$BUILD_DIR"/.profile.d/zmongo.sh <<EOF
+#!/bin/sh
+export ROOT_URL=http://$DEFAULT_HOST
+export MONGO_URL=\${MONGO_URL:-\$MONGODB_URL}
+export MAIL_URL=$SMTP_URL
 EOF
 
 # vendor node into the slug
