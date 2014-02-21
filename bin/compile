@@ -68,12 +68,16 @@ echo "-----> Resolving engine versions"
 #  requested_node_ver=$(cat $BUILD_DIR/package.json | $LP_DIR/vendor/jq -r .engines.node)
 #fi
 requested_node_ver=""
+if [ -f "${BUILD_DIR}/nodeversion" ]; then
+  echo " - nodeversion file detected, using for semvar" | indent
+  requested_node_ver=$(cat $BUILD_DIR/nodeversion)
+  echo " - requested version: $requested_node_ver" | indent
+fi
 # add a warning if no version of node specified
-if [ "${requested_node_ver}" == "" ]; then
-  requested_node_ver="stable"
+if [ "$requested_node_ver" == "" ]; then
+  requested_node_ver="0.10.24"
   echo
-  echo "No version of Node.js specified in package.json, using latest stable, see:" | indent
-  echo "https://devcenter.heroku.com/articles/nodejs-versions" | indent
+  echo "No version of Node.js specified in nodeversion, using '${requested_node_ver}'" | indent
   echo
 fi
 
