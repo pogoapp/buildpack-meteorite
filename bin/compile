@@ -137,6 +137,15 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle --debug --direc
 ############################################
 
 ############################################
+# install npm packages
+############################################
+cd "$METEOR_BUILD_DIR"/app
+
+echo "-----> Installing npm packages"
+
+run_npm "insall" | indent
+
+############################################
 # Prepare ENV vars
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
