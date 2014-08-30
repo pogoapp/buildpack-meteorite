@@ -18,6 +18,15 @@ You need to set the `ROOT_URL` environment variable:
 heroku config:add ROOT_URL=your.domain.com
 ```
 
+And it also seems that you have to set either or both `MONGO_URL` or `MONGODB_URL` environment variable.
+It seems that mongohq has changed the Variable name to `MONGOHQ_URL`:
+
+```bash
+heroku config:add MONGO_URL=mongodb:patch.to.mongo
+heroku config:add MONGODB_URL=mongodb:patch.to.mongo
+```
+> I need to figure out if maybe I can adjust the script to take the newly variable
+
 You can specify meteor settings by setting the `METEOR_SETTINGS` environment variable:
 
 ```bash
