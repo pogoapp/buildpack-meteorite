@@ -75,7 +75,7 @@ if [ -f "${BUILD_DIR}/nodeversion" ]; then
 fi
 # add a warning if no version of node specified
 if [ "$requested_node_ver" == "" ]; then
-  requested_node_ver="0.10.26"
+  requested_node_ver="0.10.29"
   echo
   echo "No version of Node.js specified in nodeversion, using '${requested_node_ver}'" | indent
   echo
@@ -103,10 +103,10 @@ export CPPPATH="$INCLUDE_PATH"
 ############################################
 # install meteorite
 ############################################
-echo "-----> Installing meteorite with npm"
+#echo "-----> Installing meteorite with npm"
 
-run_npm "install meteorite -g"
-echo "Meteorite installed" | indent
+#run_npm "install meteorite -g"
+#echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
 ############################################
@@ -124,14 +124,16 @@ echo tlsv1 > $VENDORED_METEOR/.curlrc
 curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh | indent
 echo "Meteor installed" | indent
 
-echo "Installing packages" | indent
-HOME="$BUILD_DIR" mrt install | indent
+#echo "Installing packages" | indent
+#HOME="$BUILD_DIR" mrt install | indent
 echo "Building meteor bundle" | indent
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle "$CACHE_DIR"/bundle.tar.gz 2>&1 | indent
+#HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle "$CACHE_DIR"/bundle.tar.gz 2>&1 | indent
 
-mkdir -p "$METEOR_BUILD_DIR"/app
-tar -zxf "$CACHE_DIR"/bundle.tar.gz --strip-components 1 -C "$METEOR_BUILD_DIR"/app
-rm "$CACHE_DIR"/bundle.tar.gz
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle --debug --directory "$METEOR_BUILD_DIR"/app | indent
+
+#mkdir -p "$METEOR_BUILD_DIR"/app
+#tar -zxf "$CACHE_DIR"/bundle.tar.gz --strip-components 1 -C "$METEOR_BUILD_DIR"/app
+#rm "$CACHE_DIR"/bundle.tar.gz
 ############################################
 
 ############################################
