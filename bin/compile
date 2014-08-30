@@ -139,11 +139,11 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle --debug --direc
 ############################################
 # install npm packages
 ############################################
-cd "$METEOR_BUILD_DIR"/app
+cd $METEOR_BUILD_DIR/app/programs/server
 
 echo "-----> Installing npm packages"
 
-run_npm "install" | indent
+run_npm "shrinkwrap" | indent
 
 ############################################
 # Prepare ENV vars
