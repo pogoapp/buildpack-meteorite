@@ -1,4 +1,4 @@
-# Heroku buildpack: Meteorite
+# Heroku buildpack: Meteor v0.9
 
 This build pack allows you to easily deploy meteor apps to heroku using [meteorite](http://github.com/oortcloud/meteorite). It's easy to use different branches of meteor and any smart package you can lay your hands on.
 
