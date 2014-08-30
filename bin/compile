@@ -40,8 +40,13 @@ function indent() {
 
 function run_npm() {
   command="$1"
+  dir="$BUILD_DIR"
+  if [! -z "$2" ]
+    then
+      dir="$2" 
+  fi
 
-  cd "$BUILD_DIR"
+  cd "$dir"
   HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
@@ -143,7 +148,7 @@ ls -la
 
 echo "-----> Installing npm packages"
 
-run_npm "shrinkwrap" | indent
+run_npm "shrinkwrap" "$BUILD_DIR/app/programs/server" | indent
 
 ############################################
 # Prepare ENV vars
