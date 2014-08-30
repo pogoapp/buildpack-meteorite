@@ -170,7 +170,7 @@ run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
 # Prepare ENV vars
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
-export_env_dir ENV_DIR
+export_env_dir $ENV_DIR
 mkdir -p "$BUILD_DIR"/.profile.d
 cat > "$BUILD_DIR"/.profile.d/zmongo.sh <<EOF
 #!/bin/sh
