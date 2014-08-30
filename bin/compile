@@ -148,6 +148,8 @@ ls -la
 
 echo "-----> Installing npm packages"
 
+run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
+run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
 run_npm "shrinkwrap" "$METEOR_BUILD_DIR/app/programs/server" | indent
 
 ############################################
