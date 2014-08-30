@@ -5,7 +5,7 @@
 set -e
 
 # debug
-# set -x
+set -x
 
 # clean up leaking environment
 unset GIT_DIR
@@ -149,8 +149,8 @@ ls -la
 echo "-----> Installing npm packages"
 
 run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
+run_npm "uninstall fibers" "$METEOR_BUILD_DIR/app/programs/server" | indent
 run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
-run_npm "shrinkwrap" "$METEOR_BUILD_DIR/app/programs/server" | indent
 
 ############################################
 # Prepare ENV vars
