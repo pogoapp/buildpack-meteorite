@@ -139,9 +139,6 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle --debug --direc
 ############################################
 # install npm packages
 ############################################
-pwd
-cd $METEOR_BUILD_DIR/app/programs/server
-pwd
 ls -la
 
 echo "-----> Installing npm packages"
