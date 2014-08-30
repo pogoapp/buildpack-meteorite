@@ -13,6 +13,7 @@ unset GIT_DIR
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
+ENV_DIR=$3
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
@@ -36,6 +37,19 @@ function indent() {
     Darwin) sed -l "$c";;
     *)      sed -u "$c";;
   esac
+}
+
+export_env_dir() {
+  env_dir=$1
+  whitelist_regex=${2:-''}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
 }
 
 function run_npm() {
@@ -156,6 +170,7 @@ run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
 # Prepare ENV vars
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
+export_env_dir ENV_DIR
 mkdir -p "$BUILD_DIR"/.profile.d
 cat > "$BUILD_DIR"/.profile.d/zmongo.sh <<EOF
 #!/bin/sh
