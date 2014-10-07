@@ -164,9 +164,9 @@ ls -la "$METEOR_BUILD_DIR"/app
 
 echo "-----> Installing npm packages"
 
-run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
-run_npm "uninstall fibers" "$METEOR_BUILD_DIR/app/programs/server" | indent
-run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
+run_npm "prune" "$METEOR_BUILD_DIR/app/bundle/programs/server" | indent
+run_npm "uninstall fibers" "$METEOR_BUILD_DIR/app/bundle/programs/server" | indent
+run_npm "install" "$METEOR_BUILD_DIR/app/bundle/programs/server" | indent
 
 ############################################
 # Prepare ENV vars
