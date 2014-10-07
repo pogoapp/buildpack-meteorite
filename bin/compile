@@ -160,6 +160,8 @@ HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor build --debug --direct
 ############################################
 ls -la
 
+ls -la "$METEOR_BUILD_DIR"/app
+
 echo "-----> Installing npm packages"
 
 run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
