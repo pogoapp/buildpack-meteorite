@@ -168,8 +168,8 @@ mv -f "$METEOR_BUILD_DIR"/app/bundle/* "$METEOR_BUILD_DIR"/app/
 
 run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
 run_npm "uninstall fibers" "$METEOR_BUILD_DIR/app/programs/server" | indent
-run_npm "install fibers" "$METEOR_BUILD_DIR/app/bundle/server" | indent
-run_npm "install" "$METEOR_BUILD_DIR/app/bundle/server" | indent
+#run_npm "install fibers" "$METEOR_BUILD_DIR/app/server" | indent
+run_npm "install" "$METEOR_BUILD_DIR/app/server" | indent
 
 ############################################
 # Prepare ENV vars
