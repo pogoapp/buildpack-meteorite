@@ -5,7 +5,7 @@
 set -e
 
 # debug
-# set -x
+set -x
 
 # clean up leaking environment
 unset GIT_DIR
@@ -13,6 +13,7 @@ unset GIT_DIR
 # parse and derive params
 BUILD_DIR=$1
 CACHE_DIR=$2
+ENV_DIR=$3
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
@@ -38,10 +39,28 @@ function indent() {
   esac
 }
 
+export_env_dir() {
+  env_dir=$1
+  whitelist_regex=${2:-''}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
+
 function run_npm() {
   command="$1"
+  dir="$BUILD_DIR"
+  if [ ! -z "$2" ]
+    then
+      dir="$2" 
+  fi
 
-  cd "$BUILD_DIR"
+  cd "$dir"
   HOME="$BUILD_DIR" $VENDORED_NODE/bin/node $VENDORED_NODE/bin/npm $command 2>&1 | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
@@ -75,7 +94,7 @@ if [ -f "${BUILD_DIR}/nodeversion" ]; then
 fi
 # add a warning if no version of node specified
 if [ "$requested_node_ver" == "" ]; then
-  requested_node_ver="0.10.26"
+  requested_node_ver="0.10.29"
   echo
   echo "No version of Node.js specified in nodeversion, using '${requested_node_ver}'" | indent
   echo
@@ -103,10 +122,10 @@ export CPPPATH="$INCLUDE_PATH"
 ############################################
 # install meteorite
 ############################################
-echo "-----> Installing meteorite with npm"
+#echo "-----> Installing meteorite with npm"
 
-run_npm "install meteorite -g"
-echo "Meteorite installed" | indent
+#run_npm "install meteorite -g"
+#echo "Meteorite installed" | indent
 
 METEOR_BUILD_DIR="$BUILD_DIR/.meteor/heroku_build"
 ############################################
@@ -124,25 +143,45 @@ echo tlsv1 > $VENDORED_METEOR/.curlrc
 curl https://install.meteor.com | HOME="$VENDORED_METEOR" /bin/sh | indent
 echo "Meteor installed" | indent
 
-echo "Installing packages" | indent
-HOME="$BUILD_DIR" mrt install | indent
+#echo "Installing packages" | indent
+#HOME="$BUILD_DIR" mrt install | indent
 echo "Building meteor bundle" | indent
-HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle "$CACHE_DIR"/bundle.tar.gz 2>&1 | indent
+#HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor bundle "$CACHE_DIR"/bundle.tar.gz 2>&1 | indent
 
-mkdir -p "$METEOR_BUILD_DIR"/app
-tar -zxf "$CACHE_DIR"/bundle.tar.gz --strip-components 1 -C "$METEOR_BUILD_DIR"/app
-rm "$CACHE_DIR"/bundle.tar.gz
+HOME="$VENDORED_METEOR" "$VENDORED_METEOR"/.meteor/meteor build --debug --directory "$METEOR_BUILD_DIR"/app | indent
+
+#mkdir -p "$METEOR_BUILD_DIR"/app
+#tar -zxf "$CACHE_DIR"/bundle.tar.gz --strip-components 1 -C "$METEOR_BUILD_DIR"/app
+#rm "$CACHE_DIR"/bundle.tar.gz
 ############################################
+
+############################################
+# install npm packages
+############################################
+ls -la
+
+ls -la "$METEOR_BUILD_DIR"/app
+
+echo "-----> Installing npm packages"
+
+mv -f "$METEOR_BUILD_DIR"/app/bundle/* "$METEOR_BUILD_DIR"/app/
+
+run_npm "prune" "$METEOR_BUILD_DIR/app/programs/server" | indent
+run_npm "uninstall fibers" "$METEOR_BUILD_DIR/app/programs/server" | indent
+#run_npm "install fibers" "$METEOR_BUILD_DIR/app/programs/server" | indent
+run_npm "install" "$METEOR_BUILD_DIR/app/programs/server" | indent
 
 ############################################
 # Prepare ENV vars
 ############################################
 echo "Setting up MONGO_URL in .profile.d"
+export_env_dir $ENV_DIR
 mkdir -p "$BUILD_DIR"/.profile.d
 cat > "$BUILD_DIR"/.profile.d/zmongo.sh <<EOF
 #!/bin/sh
 export ROOT_URL=http://$DEFAULT_HOST
-export MONGO_URL=\${MONGO_URL:-\$MONGODB_URL}
+export MONGO_URL=${MONGO_URL:-$MONGODB_URL}
+export MONGO_URL=${MONGO_URL:-$MONGOHQ_URL}
 export MAIL_URL=$SMTP_URL
 EOF
 
